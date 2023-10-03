@@ -1,32 +1,15 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import apiFetch from "../utils/api";
+import React, { useContext } from "react";
 import Card from "./Card";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 
 function Main(props) {
-  const [userName, setUserName] = useState("");
-  const [userDescription, setUserDescription] = useState("");
-  const [userAvatar, setUserAvatar] = useState("");
-  const [cards, setCards] = useState([]);
-
-  useEffect(() => {
-    Promise.all([apiFetch.getUserInfo(), apiFetch.getInitialCard()])
-      .then(([userData, initialCards]) => {
-        setUserName(userData.name);
-        setUserDescription(userData.about);
-        setUserAvatar(userData.avatar);
-        setCards(initialCards);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  const userItem = useContext(CurrentUserContext);
 
   return (
     <>
       <section className="profile">
         <img
-          src={userAvatar}
+          src={userItem.avatar}
           alt="Аватар пользователя"
           className="profile__avatar"
         />
@@ -37,14 +20,14 @@ function Main(props) {
           onClick={props.onEditAvatar}
         ></button>
         <div className="profile__info">
-          <h1 className="profile__name">{userName}</h1>
+          <h1 className="profile__name">{userItem.name}</h1>
           <button
             type="button"
             className="profile__editor"
             aria-label="Редактировать профиль"
             onClick={props.onEditProfile}
           ></button>
-          <p className="profile__proffesion">{userDescription}</p>
+          <p className="profile__proffesion">{userItem.about}</p>
         </div>
         <button
           className="profile__add"
@@ -53,8 +36,9 @@ function Main(props) {
           onClick={props.onAddPlace}
         ></button>
       </section>
+
       <section className="element">
-        {cards.map((card) => {
+        {props.cards.map((card) => {
           return (
             <Card
               key={card._id}
@@ -62,6 +46,8 @@ function Main(props) {
               name={card.name}
               likes={card.likes.length}
               onCardClick={props.onCardClick}
+              onCardLike = {props.onCardLike}
+              onCardDelete = {props.onCardDelete}
               card={card}
             />
           );
@@ -71,3 +57,5 @@ function Main(props) {
   );
 }
 export default Main;
+
+
