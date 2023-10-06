@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import currentUserContext from "../contexts/CurrentUserContext";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -17,6 +17,7 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [isLoading,setIsLoading] = useState(false)
 
   useEffect(() => {
     Promise.all([apiFetch.getUserInfo(), apiFetch.getInitialCard()])
@@ -36,7 +37,9 @@ function App() {
       .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
         setCards((state) =>
-          state.map((cardItem) => (cardItem._id === card._id ? newCard : cardItem))
+          state.map((cardItem) =>
+            cardItem._id === card._id ? newCard : cardItem
+          )
         );
       })
       .catch((err) => {
@@ -44,6 +47,7 @@ function App() {
       });
   }
   function handleUpdateUser(userItem) {
+    setIsLoading(true)
     apiFetch
       .editProfile(userItem.name, userItem.about)
       .then((res) => {
@@ -52,10 +56,14 @@ function App() {
       })
       .catch((err) => {
         console.log(`Возникла ошибка ${err}`);
+      })
+      .finally(()=>{
+        setIsLoading(false)
       });
   }
 
   function handleUpdateAvatar(userItem) {
+    setIsLoading(true)
     apiFetch
       .editAvatar(userItem.avatar)
       .then((res) => {
@@ -64,9 +72,14 @@ function App() {
       })
       .catch((err) => {
         console.log(`Возникла ошибка ${err}`);
+      })
+      .finally(()=>{
+        setIsLoading(false)
       });
   }
+
   function handleAddPlaceSubmit(cardItem) {
+    setIsLoading(true)
     apiFetch
       .addCard(cardItem.name, cardItem.link)
       .then((card) => {
@@ -75,15 +88,23 @@ function App() {
       })
       .catch((err) => {
         console.log(`Возникла ошибка ${err}`);
+      })
+      .finally(()=>{
+        setIsLoading(false)
       });
   }
 
   function handleDeleteCard(card) {
-    apiFetch.deleteCard(card._id).then(() => {
-      setCards((cardArray) =>
-        cardArray.filter((cardItem) => cardItem._id !== card._id)
-      );
-    });
+    apiFetch
+      .deleteCard(card._id)
+      .then(() => {
+        setCards((cardArray) =>
+          cardArray.filter((cardItem) => cardItem._id !== card._id)
+        );
+      })
+      .catch((err) => {
+        console.log(`Возникла ошибка ${err}`);
+      });
   }
 
   const handleEditAvatarClick = () => {
@@ -113,7 +134,7 @@ function App() {
   }
 
   return (
-    <currentUserContext.Provider value={currentUser}>
+    <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header />
         <Main
@@ -130,16 +151,19 @@ function App() {
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
+          isLoading={isLoading}
         />
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
+          isLoading={isLoading}
         />
         <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
           onAddMesto={handleAddPlaceSubmit}
+          isLoading={isLoading}
         />
         <ImagePopup
           isOpen={isOpenImagePopup}
@@ -147,7 +171,7 @@ function App() {
           onClose={closeAllPopups}
         />
       </div>
-    </currentUserContext.Provider>
+    </CurrentUserContext.Provider>
   );
 }
 

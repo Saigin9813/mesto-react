@@ -6,7 +6,7 @@ function Main(props) {
   const userItem = useContext(CurrentUserContext);
 
   return (
-    <>
+    <main>
       <section className="profile">
         <img
           src={userItem.avatar}
@@ -53,7 +53,7 @@ function Main(props) {
           );
         })}
       </section>
-    </>
+    </main>
   );
 }
 export default Main;

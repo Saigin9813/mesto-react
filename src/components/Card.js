@@ -20,7 +20,7 @@ function Card(props) {
   }
 
   return (
-    <article className="elements__card" key={props.id}>
+    <article className="elements__card">
       {isOwn && <button
         type="button"
         className="cards__delete"

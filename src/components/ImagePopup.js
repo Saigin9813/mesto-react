@@ -1,6 +1,8 @@
 import React from "react";
+import { usePopupClose } from "../hooks/usePopupClose";
 
 function ImagePopup(props) {
+  usePopupClose(props.isOpen,props.onClose)
   return (
     <div
       className={`popup popup_zoom-image ${props.isOpen ? "popup_opened" : ""}`}

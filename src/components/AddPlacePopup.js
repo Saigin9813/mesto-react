@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import PopupWithForm from "./PopupWithForm";
 
 function AddPlacePopup(props){
   const [nameMesto,setNameMesto] = useState('');
   const [urlMesto,setUrlMesto] = useState('');
 
+  useEffect(()=>{
+    setNameMesto('');
+    setUrlMesto('');
+  },[props.isOpen])
   
   function handleNameMesto(e) {
     setNameMesto(e.target.value);
@@ -20,8 +24,6 @@ function AddPlacePopup(props){
       name:nameMesto,
       link: urlMesto 
     });
-    setNameMesto('');
-    setUrlMesto('')
   }
 
   return(
@@ -32,6 +34,7 @@ function AddPlacePopup(props){
     form={"mesto-add"}
     onClose={props.onClose}
     onSubmit={handleSubmit}
+    isLoading={props.isLoading}
     children={
       <>
         <input
